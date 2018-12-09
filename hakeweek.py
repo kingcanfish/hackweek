@@ -236,7 +236,7 @@ def search_lost():
     else:
         search0 ='%'+search+'%'
         data = []
-        losts = Lost.query.filter(Lost.isget==isget, or_(Lost.desc.like(search0), Lost.goods.like(search0), Lost.location.like(search0), Lost.date.like(search0), Lost.goods_name(search0))).all()
+        losts = Lost.query.filter(Lost.isget==isget, or_(Lost.desc.like(search0), Lost.goods.like(search0), Lost.location.like(search0), Lost.date.like(search0), Lost.goods_name.like(search0))).all()
         for lost in losts:
             data.append({
                 "name": lost.name,
@@ -398,7 +398,7 @@ def search_find():
     else:
         search0 ='%'+search+'%'
         data = []
-        losts = Find.query.filter(or_(Find.desc.like(search0), Find.goods.like(search0), Find.location.like(search0), Find.date.like(search0), Find.goods_name(search0))).all()
+        losts = Find.query.filter(or_(Find.desc.like(search0), Find.goods.like(search0), Find.location.like(search0), Find.date.like(search0), Find.goods_name.like(search0))).all()
         for find in find:
             data.append({
                 "name": find.name,
