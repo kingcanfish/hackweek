@@ -8,7 +8,7 @@ from sqlalchemy import or_, and_
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:keyu0102@localhost/hackweek?charset=utf8"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:12346@localhost/hackweek?charset=utf8"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 db = SQLAlchemy(app)
@@ -40,6 +40,7 @@ class Lost(db.Model):
     isget = db.Column(db.String(10))
     name = db.Column(db.String(50))
     commit_name = db.Column(db.String(50))
+    goods_name = db .Column(db.String(20))
 
 
 
@@ -58,7 +59,7 @@ class Find(db.Model):
     qq = db.Column(db.String(10))
     telephone = db.Column(db.String(11))
     isget = db.Column(db.String(10))
-    
+    goods_name = db .Column(db.String(20))
 
 
 
@@ -113,7 +114,9 @@ def add_lost():
     date = request.json.get("date")
     qq = request.json.get("qq")
     telephone = request.json.get("telephone")
-    isget = "未找回"
+    isget = "未领取"
+    goods_name = request.json.get("goods_name")
+
 
     if not qq and not telephone:
         return jsonify({
@@ -121,7 +124,7 @@ def add_lost():
                 "message": "请联系方式填写完整！"
              }), 400
 
-    lost = Lost(name=name, goods=goods, location=location, desc=desc, date=date, qq=qq, telephone=telephone, isget=isget, id=id, commit_name = commit_name)
+    lost = Lost(name=name, goods=goods, location=location, desc=desc, date=date, qq=qq, telephone=telephone, isget=isget, id=id, commit_name = commit_name, goods_name =goods_name)
     db.session.add(lost)
     db.session.commit()
     return jsonify({
@@ -159,7 +162,8 @@ def get_lost():
                 "date":lost.date,
                 "isget":lost.isget,
                 "goods_id":lost.goods_id,
-                "commit_name":lost.commit_name
+                "commit_name":lost.commit_name,
+                "goods_name": lost.goods_name
             })  
         return jsonify(data)
     elif not location:
@@ -176,7 +180,8 @@ def get_lost():
                 "date": lost.date,
                 "isget": lost.isget,
                 "goods_id":lost.goods_id,
-                "commit_name":lost.commit_name
+                "commit_name":lost.commit_name,
+                "goods_name": lost.goods_name
             })
         return jsonify(data)
     elif not date:
@@ -193,7 +198,8 @@ def get_lost():
                 "date": lost.date,
                 "isget":lost.isget,
                 "goods_id":lost.goods_id,
-                "commit_name":lost.commit_name
+                "commit_name":lost.commit_name,
+                "goods_name": lost.goods_name
             })  
         return jsonify(data)
     else:
@@ -210,7 +216,8 @@ def get_lost():
                 "date": lost.date,
                 "isget": lost.isget,
                 "goods_id": lost.goods_id,
-                "commit_name":lost.commit_name
+                "commit_name":lost.commit_name,
+                "goods_name": lost.goods_name
             })  
         return jsonify(data)#筛选失物招领
 
@@ -229,7 +236,7 @@ def search_lost():
     else:
         search0 ='%'+search+'%'
         data = []
-        losts = Lost.query.filter(Lost.isget==isget, or_(Lost.desc.like(search0), Lost.goods.like(search0), Lost.location.like(search0), Lost.date.like(search0))).all()
+        losts = Lost.query.filter(Lost.isget==isget, or_(Lost.desc.like(search0), Lost.goods.like(search0), Lost.location.like(search0), Lost.date.like(search0), Lost.goods_name(search0))).all()
         for lost in losts:
             data.append({
                 "name": lost.name,
@@ -241,7 +248,8 @@ def search_lost():
                 "date": lost.date,
                 "isget": lost.isget,
                 "goods_id": lost.goods_id,
-                "commit_name":lost.commit_name
+                "commit_name":lost.commit_name,
+                "goods_name": lost.goods_name
 
         })
 
@@ -274,6 +282,7 @@ def get_find():
     goods = request.args.get("goods")
     location = request.args.get("location")
     date = request.args.get("date")
+    goods_name = request.args.get("goods_name")
 
 
     if not goods:
@@ -290,7 +299,8 @@ def get_find():
                 "qq": find.qq,
                 "telephone": find.telephone,
                 "date": find.date,
-                "goods_id": find.goods_id
+                "goods_id": find.goods_id,
+                "goods_name": find.goods_name
             })  
         return jsonify(data)
     elif not location:
@@ -305,7 +315,8 @@ def get_find():
                 "qq": find.qq,
                 "telephone": find.telephone,
                 "date": find.date,
-                "goods_id": find.goods_id
+                "goods_id": find.goods_id,
+                "goods_name": find.goods_name
             }) 
         return jsonify(data)
     elif not date:
@@ -320,7 +331,8 @@ def get_find():
                 "qq": find.qq,
                 "telephone": find.telephone,
                 "date": find.date,
-                "goods_id": find.goods_id
+                "goods_id": find.goods_id,
+                "goods_name": find.goods_name
             }) 
         return jsonify(data)
     else:
@@ -335,7 +347,8 @@ def get_find():
                 "qq": find.qq,
                 "telephone": find.telephone,
                 "date": find.date,
-                "goods_id": find.goods_id
+                "goods_id": find.goods_id,
+                "goods_name": find.goods_name
             }) 
         return jsonify(data)#筛选寻物启事
 
@@ -354,6 +367,7 @@ def add_find():
     date = request.json.get("date")
     qq = request.json.get("qq")
     telephone = request.json.get("telephone")
+    goods_name = request.json.get("goods_name")
     isget = "未归还"
 
     if not qq and not telephone:
@@ -362,7 +376,7 @@ def add_find():
                 "message": "请联系方式填写完整！"
              }), 400
 
-    find = Find(name=name, goods=goods, location=location, desc=desc, date=date, qq=qq, telephone=telephone, isget=isget, id=id)
+    find = Find(name=name, goods=goods, location=location, desc=desc, date=date, qq=qq, telephone=telephone, isget=isget, id=id, goods_name=goods_name)
     db.session.add(find)
     db.session.commit()
     return jsonify({
@@ -384,18 +398,19 @@ def search_find():
     else:
         search0 ='%'+search+'%'
         data = []
-        losts = Find.query.filter(or_(Find.desc.like(search0), Find.goods.like(search0), Find.location.like(search0), Find.date.like(search0))).all()
-        for lost in losts:
+        losts = Find.query.filter(or_(Find.desc.like(search0), Find.goods.like(search0), Find.location.like(search0), Find.date.like(search0), Find.goods_name(search0))).all()
+        for find in find:
             data.append({
-                "name": lost.name,
-                "goods": lost.goods,
-                "location": lost.location,
-                "desc": lost.desc,
-                "qq": lost.qq,
-                "telephone": lost.telephone,
-                "date": lost.date,
-                "isget": lost.isget,
-                "goods_id": lost.goods_id
+                "name": find.name,
+                "goods": find.goods,
+                "location": find.location,
+                "desc": find.desc,
+                "qq": find.qq,
+                "telephone": find.telephone,
+                "date": find.date,
+                "isget": find.isget,
+                "goods_id": find.goods_id,
+                "goods_name": find.goods_name
 
         })
 
@@ -436,7 +451,8 @@ def lost_my():
                 "telephone": lost.telephone,
                 "date": lost.date,
                 "isget": lost.isget,
-                "goods_id": lost.goods_id
+                "goods_id": lost.goods_id,
+                "goods_name": lost.goods_name
             }) 
     return jsonify(data)
 
@@ -461,7 +477,8 @@ def find_my():
                 "telephone": find.telephone,
                 "date": find.date,
                 "isget": find.isget,
-                "goods_id": find.goods_id
+                "goods_id": find.goods_id,
+                "goods_name": find.goods_name
             }) 
     return jsonify(data)
 
