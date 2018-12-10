@@ -8,7 +8,7 @@ from sqlalchemy import or_, and_
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:12346@localhost/hackweek?charset=utf8"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:123456@localhost/hackweek?charset=utf8"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 db = SQLAlchemy(app)
@@ -356,6 +356,8 @@ def get_find():
 
 
 
+
+
 @app.route("/find_add", methods=['POST'])#发布一般物品的寻物启事
 def add_find():
 
@@ -498,7 +500,7 @@ def isget_lost():
     lost.isget = isget
     db.session.commit()
     return jsonify({
-            "message":"提交成功！"
+            "message": "提交成功！"
         })
 
 
@@ -515,7 +517,7 @@ def isget_find():
     db.session.delete(find)
     db.session.commit()
     return jsonify({
-            "message":"提交成功！"
+            "message": "提交成功！"
         })
 
 
@@ -553,7 +555,7 @@ def get_offical():
     offical = Offical.query.filter_by(offical_id=offical_id).first()
     if offical.passwd != passwd:
         return jsonify({
-                "message":"账号或密码错误!"
+                "message": "账号或密码错误!"
             })
     else:
         return jsonify({
@@ -580,7 +582,7 @@ def safe():
     db.session.add(safe)
     db.session.commit()
     return jsonify({
-            "message":"安全信息保存成功！"
+            "message": "安全信息保存成功！"
         })
 
 
